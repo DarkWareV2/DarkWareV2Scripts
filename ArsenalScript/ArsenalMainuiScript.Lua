@@ -12,7 +12,7 @@ scrollingFrame.Parent = screenGui
 
 -- Optional: Customize the ScrollingFrame (e.g., scroll bar, background color)
 scrollingFrame.ScrollBarThickness = 10
-scrollingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- White background
+scrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- White background
 
 -- Create a draggable area at the top of the ScrollingFrame
 local dragArea = Instance.new("Frame")
