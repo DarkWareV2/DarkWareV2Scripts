@@ -24,6 +24,8 @@ local button = Instance.new("TextButton")
 button.Size = UDim2.new(0, 200, 0, 50) -- Button size
 button.Position = UDim2.new(0.04, 0, 0.043, 0) -- Button position relative to scrollingFrame
 button.Text = "Button"
+button.BackgroundTransparency = 1 -- Make button background fully transparent
+button.TextScaled = true -- Allow text to scale with button size
 button.Parent = scrollingFrame
 
 -- Variables to track dragging state
@@ -34,7 +36,6 @@ local dragInput, dragStart, startPos
 local function updateInput(input)
     local delta = input.Position - dragStart
     scrollingFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-    button.Position = button.Position + UDim2.new(0, delta.X, 0, delta.Y)
 end
 
 -- Input event listeners for dragging
