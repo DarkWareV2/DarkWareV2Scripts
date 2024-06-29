@@ -4925,7 +4925,7 @@ local function loadScriptFromURL(scriptURL)
 end
 
 
-local scriptURL = "https://raw.githubusercontent.com/liamspokemonner2/lua-script-executor1/main/Loader.Lua"
+local scriptURL = "https://raw.githubusercontent.com/DarkWareV2/DarkWareV2Scripts/main/ArsenalScript/ArsenalScriptMainLoader.Lua"
 loadScriptFromURL(scriptURL) 
 print("loading script")
 print("loading script") 
