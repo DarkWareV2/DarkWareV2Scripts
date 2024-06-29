@@ -31,9 +31,11 @@ button.Parent = scrollingFrame
 
 -- Create an input box for hitbox size
 local sizeInput = Instance.new("TextBox")
-sizeInput.Size = UDim2.new(0, 50, 0, 30) -- Input box size
-sizeInput.Position = UDim2.new(0.3, 0, 0.043, 0) -- Position next to the button
+sizeInput.Size = UDim2.new(0, 200, 0, 50) -- Input box size
+sizeInput.Position = UDim2.new(0.618, 0, 0.213, 0) -- Position next to the button
 sizeInput.Text = "13" -- Default size value
+sizeInput.BackgroundTransparency = 1 -- Make background fully transparent
+sizeInput.TextColor3 = button.TextColor3 -- Match text color with button
 sizeInput.Parent = scrollingFrame
 
 -- Function to toggle the button text and adjust hitbox visibility
