@@ -23,10 +23,37 @@ dragArea.Parent = scrollingFrame
 local button = Instance.new("TextButton")
 button.Size = UDim2.new(0, 200, 0, 50) -- Button size
 button.Position = UDim2.new(0.04, 0, 0.043, 0) -- Button position relative to scrollingFrame
-button.Text = "Button"
+button.Text = "Off" -- Initial text
 button.BackgroundTransparency = 1 -- Make button background fully transparent
+button.TextColor3 = Color3.new(1, 0, 0) -- Initial text color (red)
 button.TextScaled = true -- Allow text to scale with button size
 button.Parent = scrollingFrame
+
+-- Function to toggle the button text
+local function toggleButtonText()
+    if button.Text == "Off" then
+        button.Text = "On"
+        button.TextColor3 = Color3.new(0, 1, 0) -- Change text color to green
+    else
+        button.Text = "Off"
+        button.TextColor3 = Color3.new(1, 0, 0) -- Change text color to red
+    end
+end
+
+-- Toggle text when button is clicked
+button.MouseButton1Click:Connect(function()
+    toggleButtonText()
+    -- Add any other actions you want to perform on button click here
+end)
+
+-- Function to get players' name
+local function getplrsname()
+    for i, v in pairs(game:GetChildren()) do
+        if v.ClassName == "Players" then
+            return v.Name
+        end
+    end
+end
 
 -- Variables to track dragging state
 local dragging = false
