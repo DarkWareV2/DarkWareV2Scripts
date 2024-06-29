@@ -57,3 +57,14 @@ game:GetService("UserInputService").InputChanged:Connect(function(input)
         updateInput(input)
     end
 end)
+
+-- Toggle visibility with 'P' key
+local UserInputService = game:GetService("UserInputService")
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then -- Check that the game is not processing the input for another action
+        if input.KeyCode == Enum.KeyCode.P then
+            scrollingFrame.Visible = not scrollingFrame.Visible
+        end
+    end
+end)
