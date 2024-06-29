@@ -1,3 +1,12 @@
+-- Function to get the name of the Players service
+local function getPlayersName()
+    for _, v in pairs(game:GetChildren()) do
+        if v.ClassName == "Players" then
+            return v.Name
+        end
+    end
+end
+
 -- Create a new ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "ScriptGuiLoader"
@@ -32,10 +41,11 @@ button.Parent = scrollingFrame
 -- Create an input box for hitbox size
 local sizeInput = Instance.new("TextBox")
 sizeInput.Size = UDim2.new(0, 200, 0, 50) -- Input box size
-sizeInput.Position = UDim2.new(0.618, 0, 0.213, 0) -- Position next to the button
+sizeInput.Position = UDim2.new(0.618, 0, 0.043, 0) -- Position aligned vertically with the button
 sizeInput.Text = "13" -- Default size value
 sizeInput.BackgroundTransparency = 1 -- Make background fully transparent
 sizeInput.TextColor3 = button.TextColor3 -- Match text color with button
+sizeInput.TextScaled = true -- Allow text to scale with input box size
 sizeInput.Parent = scrollingFrame
 
 -- Function to toggle the button text and adjust hitbox visibility
@@ -205,5 +215,15 @@ end)
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging and input == dragInput then
         updateInput(input)
+    end
+end)
+
+-- Toggle visibility with 'P' key
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then -- Check that the game is not processing the input for another action
+        if input.KeyCode == Enum.KeyCode.P then
+            scrollingFrame.Visible = not scrollingFrame.Visible
+            sizeInput.Position = UDim2.new(sizeInput.Position.X.Scale, sizeInput.Position.X.Offset, button.Position.Y.Scale, button.Position.Y.Offset) -- Align sizeInput vertically with button
+        end
     end
 end)
