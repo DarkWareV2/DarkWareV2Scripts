@@ -8,11 +8,9 @@ local scrollingFrame = Instance.new("ScrollingFrame")
 scrollingFrame.Size = UDim2.new(0, 455, 0, 547)
 scrollingFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centering the frame on the screen
 scrollingFrame.AnchorPoint = Vector2.new(0.5, 0.5) -- Setting the anchor point to the center
+scrollingFrame.BackgroundColor3 = Color3.new(0, 0, 0) -- Black background
+scrollingFrame.BorderSizePixel = 0 -- No border
 scrollingFrame.Parent = screenGui
-
--- Optional: Customize the ScrollingFrame (e.g., scroll bar, background color)
-scrollingFrame.ScrollBarThickness = 10
-scrollingFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- White background
 
 -- Create a draggable area at the top of the ScrollingFrame
 local dragArea = Instance.new("Frame")
@@ -21,14 +19,22 @@ dragArea.Position = UDim2.new(0, 0, 0, 0)
 dragArea.BackgroundTransparency = 1 -- Make it invisible
 dragArea.Parent = scrollingFrame
 
+-- Create a button on top of the ScrollingFrame
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 200, 0, 50) -- Button size
+button.Position = UDim2.new(0.04, 0, 0.043, 0) -- Button position relative to scrollingFrame
+button.Text = "Button"
+button.Parent = scrollingFrame
+
 -- Variables to track dragging state
 local dragging = false
 local dragInput, dragStart, startPos
 
--- Function to update the position of the frame
+-- Function to update the position of the frame and button
 local function updateInput(input)
     local delta = input.Position - dragStart
     scrollingFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    button.Position = button.Position + UDim2.new(0, delta.X, 0, delta.Y)
 end
 
 -- Input event listeners for dragging
@@ -65,7 +71,6 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed then -- Check that the game is not processing the input for another action
         if input.KeyCode == Enum.KeyCode.P then
             scrollingFrame.Visible = not scrollingFrame.Visible
-            print("Toggled visibility:", scrollingFrame.Visible) -- Debug print to confirm toggle
         end
     end
 end)
