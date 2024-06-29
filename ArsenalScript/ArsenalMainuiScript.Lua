@@ -29,14 +29,128 @@ button.TextColor3 = Color3.new(1, 0, 0) -- Initial text color (red)
 button.TextScaled = true -- Allow text to scale with button size
 button.Parent = scrollingFrame
 
--- Function to toggle the button text
+-- Create an input box for hitbox size
+local sizeInput = Instance.new("TextBox")
+sizeInput.Size = UDim2.new(0, 50, 0, 30) -- Input box size
+sizeInput.Position = UDim2.new(0.3, 0, 0.043, 0) -- Position next to the button
+sizeInput.Text = "13" -- Default size value
+sizeInput.Parent = scrollingFrame
+
+-- Function to toggle the button text and adjust hitbox visibility
 local function toggleButtonText()
     if button.Text == "Off" then
         button.Text = "On"
         button.TextColor3 = Color3.new(0, 1, 0) -- Change text color to green
+        
+        -- Hide hitboxes of other players and adjust size
+        local players = game:GetService("Players")
+        local localPlayer = players.LocalPlayer
+        local playerName = localPlayer.Name
+        local newSize = tonumber(sizeInput.Text) or 13
+        
+        for _, player in ipairs(players:GetPlayers()) do
+            if player.Name ~= playerName then
+                local character = player.Character
+                if character then
+                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                    local headHB = character:FindFirstChild("HeadHB")
+                    local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
+                    local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
+                    
+                    if humanoidRootPart then
+                        humanoidRootPart.Size = Vector3.new(newSize, newSize, newSize)
+                        humanoidRootPart.Transparency = 1 -- Hide if on
+                        humanoidRootPart.CanCollide = false -- Disable collision if on
+                    end
+                    if headHB then
+                        headHB.Size = Vector3.new(newSize, newSize, newSize)
+                        headHB.Transparency = 1 -- Hide if on
+                        headHB.CanCollide = false -- Disable collision if on
+                    end
+                    if leftUpperLeg then
+                        leftUpperLeg.Size = Vector3.new(newSize, newSize, newSize)
+                        leftUpperLeg.Transparency = 1 -- Hide if on
+                        leftUpperLeg.CanCollide = false -- Disable collision if on
+                    end
+                    if rightUpperLeg then
+                        rightUpperLeg.Size = Vector3.new(newSize, newSize, newSize)
+                        rightUpperLeg.Transparency = 1 -- Hide if on
+                        rightUpperLeg.CanCollide = false -- Disable collision if on
+                    end
+                end
+            end
+        end
     else
         button.Text = "Off"
         button.TextColor3 = Color3.new(1, 0, 0) -- Change text color to red
+        
+        -- Show hitboxes of other players
+        local players = game:GetService("Players")
+        local localPlayer = players.LocalPlayer
+        local playerName = localPlayer.Name
+        
+        for _, player in ipairs(players:GetPlayers()) do
+            if player.Name ~= playerName then
+                local character = player.Character
+                if character then
+                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                    local headHB = character:FindFirstChild("HeadHB")
+                    local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
+                    local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
+                    
+                    if humanoidRootPart then
+                        humanoidRootPart.Size = Vector3.new(1, 1, 1) -- Reset size
+                        humanoidRootPart.Transparency = 0 -- Show hitbox
+                        humanoidRootPart.CanCollide = true -- Enable collision
+                    end
+                    if headHB then
+                        headHB.Size = Vector3.new(1, 1, 1) -- Reset size
+                        headHB.Transparency = 0 -- Show hitbox
+                        headHB.CanCollide = true -- Enable collision
+                    end
+                    if leftUpperLeg then
+                        leftUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
+                        leftUpperLeg.Transparency = 0 -- Show hitbox
+                        leftUpperLeg.CanCollide = true -- Enable collision
+                    end
+                    if rightUpperLeg then
+                        rightUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
+                        rightUpperLeg.Transparency = 0 -- Show hitbox
+                        rightUpperLeg.CanCollide = true -- Enable collision
+                    end
+                end
+            end
+        end
+        
+        -- Reset local player's hitbox size
+        local character = localPlayer.Character
+        if character then
+            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+            local headHB = character:FindFirstChild("HeadHB")
+            local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
+            local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
+            
+            if humanoidRootPart then
+                humanoidRootPart.Size = Vector3.new(1, 1, 1) -- Reset size
+                humanoidRootPart.Transparency = 0 -- Show hitbox
+                humanoidRootPart.CanCollide = true -- Enable collision
+            end
+            if headHB then
+                headHB.Size = Vector3.new(1, 1, 1) -- Reset size
+                headHB.Transparency = 0 -- Show hitbox
+                headHB.CanCollide = true -- Enable collision
+            end
+            if leftUpperLeg then
+                leftUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
+                leftUpperLeg.Transparency = 0 -- Show hitbox
+                leftUpperLeg.CanCollide = true -- Enable collision
+            end
+            if rightUpperLeg then
+                rightUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
+                rightUpperLeg.Transparency = 0 -- Show hitbox
+                rightUpperLeg.CanCollide = true -- Enable collision
+            end
+        end
     end
 end
 
@@ -46,9 +160,9 @@ button.MouseButton1Click:Connect(function()
     -- Add any other actions you want to perform on button click here
 end)
 
--- Function to get players' name
-local function getplrsname()
-    for i, v in pairs(game:GetChildren()) do
+-- Create a function to get players' name
+local function getPlayersName()
+    for _, v in pairs(game:GetChildren()) do
         if v.ClassName == "Players" then
             return v.Name
         end
@@ -89,16 +203,5 @@ end)
 game:GetService("UserInputService").InputChanged:Connect(function(input)
     if dragging and input == dragInput then
         updateInput(input)
-    end
-end)
-
--- Toggle visibility with 'P' key
-local UserInputService = game:GetService("UserInputService")
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then -- Check that the game is not processing the input for another action
-        if input.KeyCode == Enum.KeyCode.P then
-            scrollingFrame.Visible = not scrollingFrame.Visible
-        end
     end
 end)
