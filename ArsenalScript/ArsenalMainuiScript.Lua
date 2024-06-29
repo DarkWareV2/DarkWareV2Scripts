@@ -50,7 +50,46 @@ sizeInput.Parent = scrollingFrame
 
 -- Function to toggle the button text and adjust hitbox visibility
 local function toggleButtonText()
-    if button.Text == "Off" then
+    local isOn = button.Text == "On"
+    
+    if isOn then
+        button.Text = "Off"
+        button.TextColor3 = Color3.new(1, 0, 0) -- Change text color to red
+        
+        -- Show hitboxes of all players
+        local players = game:GetService("Players")
+        
+        for _, player in ipairs(players:GetPlayers()) do
+            local character = player.Character
+            if character then
+                local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                local headHB = character:FindFirstChild("HeadHB")
+                local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
+                local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
+                
+                if humanoidRootPart then
+                    humanoidRootPart.Size = Vector3.new(1, 1, 1) -- Reset size
+                    humanoidRootPart.Transparency = 0 -- Show hitbox
+                    humanoidRootPart.CanCollide = true -- Enable collision
+                end
+                if headHB then
+                    headHB.Size = Vector3.new(1, 1, 1) -- Reset size
+                    headHB.Transparency = 0 -- Show hitbox
+                    headHB.CanCollide = true -- Enable collision
+                end
+                if leftUpperLeg then
+                    leftUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
+                    leftUpperLeg.Transparency = 0 -- Show hitbox
+                    leftUpperLeg.CanCollide = true -- Enable collision
+                end
+                if rightUpperLeg then
+                    rightUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
+                    rightUpperLeg.Transparency = 0 -- Show hitbox
+                    rightUpperLeg.CanCollide = true -- Enable collision
+                end
+            end
+        end
+    else
         button.Text = "On"
         button.TextColor3 = Color3.new(0, 1, 0) -- Change text color to green
         
@@ -58,7 +97,7 @@ local function toggleButtonText()
         local players = game:GetService("Players")
         local localPlayer = players.LocalPlayer
         local playerName = localPlayer.Name
-        local newSize = tonumber(sizeInput.Text) or 13
+        local newSize = math.clamp(tonumber(sizeInput.Text) or 13, 1, 25) -- Clamp size between 1 and 25
         
         for _, player in ipairs(players:GetPlayers()) do
             if player.Name ~= playerName then
@@ -92,16 +131,20 @@ local function toggleButtonText()
                 end
             end
         end
-    else
-        button.Text = "Off"
-        button.TextColor3 = Color3.new(1, 0, 0) -- Change text color to red
-        
-        -- Show hitboxes of other players
+    end
+end
+
+-- Function to apply hitbox changes to new players
+local function applyHitboxToNewPlayers()
+    local isOn = button.Text == "On"
+    
+    if isOn then
         local players = game:GetService("Players")
         local localPlayer = players.LocalPlayer
         local playerName = localPlayer.Name
+        local newSize = math.clamp(tonumber(sizeInput.Text) or 13, 1, 25) -- Clamp size between 1 and 25
         
-        for _, player in ipairs(players:GetPlayers()) do
+        players.PlayerAdded:Connect(function(player)
             if player.Name ~= playerName then
                 local character = player.Character
                 if character then
@@ -111,58 +154,28 @@ local function toggleButtonText()
                     local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
                     
                     if humanoidRootPart then
-                        humanoidRootPart.Size = Vector3.new(1, 1, 1) -- Reset size
-                        humanoidRootPart.Transparency = 0 -- Show hitbox
-                        humanoidRootPart.CanCollide = true -- Enable collision
+                        humanoidRootPart.Size = Vector3.new(newSize, newSize, newSize)
+                        humanoidRootPart.Transparency = 1 -- Hide if on
+                        humanoidRootPart.CanCollide = false -- Disable collision if on
                     end
                     if headHB then
-                        headHB.Size = Vector3.new(1, 1, 1) -- Reset size
-                        headHB.Transparency = 0 -- Show hitbox
-                        headHB.CanCollide = true -- Enable collision
+                        headHB.Size = Vector3.new(newSize, newSize, newSize)
+                        headHB.Transparency = 1 -- Hide if on
+                        headHB.CanCollide = false -- Disable collision if on
                     end
                     if leftUpperLeg then
-                        leftUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
-                        leftUpperLeg.Transparency = 0 -- Show hitbox
-                        leftUpperLeg.CanCollide = true -- Enable collision
+                        leftUpperLeg.Size = Vector3.new(newSize, newSize, newSize)
+                        leftUpperLeg.Transparency = 1 -- Hide if on
+                        leftUpperLeg.CanCollide = false -- Disable collision if on
                     end
                     if rightUpperLeg then
-                        rightUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
-                        rightUpperLeg.Transparency = 0 -- Show hitbox
-                        rightUpperLeg.CanCollide = true -- Enable collision
+                        rightUpperLeg.Size = Vector3.new(newSize, newSize, newSize)
+                        rightUpperLeg.Transparency = 1 -- Hide if on
+                        rightUpperLeg.CanCollide = false -- Disable collision if on
                     end
                 end
             end
-        end
-        
-        -- Reset local player's hitbox size
-        local character = localPlayer.Character
-        if character then
-            local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-            local headHB = character:FindFirstChild("HeadHB")
-            local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
-            local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
-            
-            if humanoidRootPart then
-                humanoidRootPart.Size = Vector3.new(1, 1, 1) -- Reset size
-                humanoidRootPart.Transparency = 0 -- Show hitbox
-                humanoidRootPart.CanCollide = true -- Enable collision
-            end
-            if headHB then
-                headHB.Size = Vector3.new(1, 1, 1) -- Reset size
-                headHB.Transparency = 0 -- Show hitbox
-                headHB.CanCollide = true -- Enable collision
-            end
-            if leftUpperLeg then
-                leftUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
-                leftUpperLeg.Transparency = 0 -- Show hitbox
-                leftUpperLeg.CanCollide = true -- Enable collision
-            end
-            if rightUpperLeg then
-                rightUpperLeg.Size = Vector3.new(1, 1, 1) -- Reset size
-                rightUpperLeg.Transparency = 0 -- Show hitbox
-                rightUpperLeg.CanCollide = true -- Enable collision
-            end
-        end
+        end)
     end
 end
 
@@ -171,6 +184,9 @@ button.MouseButton1Click:Connect(function()
     toggleButtonText()
     -- Add any other actions you want to perform on button click here
 end)
+
+-- Call function to apply hitbox changes to new players when script starts
+applyHitboxToNewPlayers()
 
 -- Create a function to get players' name
 local function getPlayersName()
