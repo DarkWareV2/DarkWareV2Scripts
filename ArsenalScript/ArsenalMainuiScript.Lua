@@ -31,7 +31,7 @@ local function updateInput(input)
     scrollingFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 end
 
--- Input event listeners
+-- Input event listeners for dragging
 dragArea.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = true
@@ -65,6 +65,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed then -- Check that the game is not processing the input for another action
         if input.KeyCode == Enum.KeyCode.P then
             scrollingFrame.Visible = not scrollingFrame.Visible
+            print("Toggled visibility:", scrollingFrame.Visible) -- Debug print to confirm toggle
         end
     end
 end)
