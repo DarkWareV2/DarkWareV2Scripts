@@ -48,6 +48,16 @@ sizeInput.TextColor3 = button.TextColor3 -- Match text color with button
 sizeInput.TextScaled = true -- Allow text to scale with input box size
 sizeInput.Parent = scrollingFrame
 
+-- Create a highlight button
+local highlightButton = Instance.new("TextButton")
+highlightButton.Size = UDim2.new(0, 200, 0, 50) -- Button size
+highlightButton.Position = UDim2.new(0.04, 0, 0.116, 0) -- Position below the 'Off' button
+highlightButton.Text = "Highlight Enemies" -- Initial text
+highlightButton.BackgroundTransparency = 1 -- Make button background fully transparent
+highlightButton.TextColor3 = Color3.new(1, 0, 0) -- Initial text color (red)
+highlightButton.TextScaled = true -- Allow text to scale with button size
+highlightButton.Parent = scrollingFrame
+
 -- Function to toggle the button text and adjust hitbox visibility
 local function toggleButtonText()
     local isOn = button.Text == "On"
@@ -179,9 +189,85 @@ local function applyHitboxToNewPlayers()
     end
 end
 
+-- Function to toggle enemy highlighting
+local function toggleEnemyHighlight()
+    local isHighlighting = highlightButton.Text == "Highlight Enemies"
+
+    if isHighlighting then
+        highlightButton.Text = "Unhighlight Enemies"
+        highlightButton.TextColor3 = Color3.new(0, 1, 0) -- Change text color to green
+        
+        -- Function to highlight enemies through walls
+        local function highlightEnemies()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            local playerName = localPlayer.Name
+
+            for _, player in ipairs(players:GetPlayers()) do
+                if player.Name ~= playerName then
+                    local character = player.Character
+                    if character then
+                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                        if humanoidRootPart then
+                            -- Apply highlighting effect
+                            local highlight = Instance.new("BoxHandleAdornment")
+                            highlight.Size = humanoidRootPart.Size
+                            highlight.Color3 = Color3.new(1, 0, 0) -- Red color
+                            highlight.Transparency = 0.5 -- Semi-transparent
+                            highlight.AlwaysOnTop = true
+                            highlight.Adornee = humanoidRootPart
+                            highlight.Parent = humanoidRootPart
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Call function to highlight enemies
+        highlightEnemies()
+
+    else
+        highlightButton.Text = "Highlight Enemies"
+        highlightButton.TextColor3 = Color3.new(1, 0, 0) -- Change text color to red
+
+        -- Function to remove highlighted enemies
+        local function removeEnemyHighlight()
+            local players = game:GetService("Players")
+            local localPlayer = players.LocalPlayer
+            local playerName = localPlayer.Name
+
+            for _, player in ipairs(players:GetPlayers()) do
+                if player.Name ~= playerName then
+                    local character = player.Character
+                    if character then
+                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                        if humanoidRootPart then
+                            -- Remove all adornments (highlights)
+                            for _, child in ipairs(humanoidRootPart:GetChildren()) do
+                                if child:IsA("BoxHandleAdornment") then
+                                    child:Destroy()
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Call function to remove highlights
+        removeEnemyHighlight()
+    end
+end
+
 -- Toggle text when button is clicked
 button.MouseButton1Click:Connect(function()
     toggleButtonText()
+    -- Add any other actions you want to perform on button click here
+end)
+
+-- Toggle enemy highlighting when button is clicked
+highlightButton.MouseButton1Click:Connect(function()
+    toggleEnemyHighlight()
     -- Add any other actions you want to perform on button click here
 end)
 
