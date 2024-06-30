@@ -58,6 +58,74 @@ highlightButton.TextColor3 = Color3.new(1, 0, 0) -- Initial text color (red)
 highlightButton.TextScaled = true -- Allow text to scale with button size
 highlightButton.Parent = scrollingFrame
 
+-- Create a ScreenGui to hold our UI elements
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "EnemyHighlighterGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Function to create UI for each enemy
+local function createEnemyUI(enemy)
+    local head = enemy:WaitForChild("Head")
+    if not head then return end
+    
+    -- Create BillboardGui
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Name = "EnemyHighlighter"
+    billboardGui.Size = UDim2.new(2, 0, 2, 0) -- Size of the BillboardGui
+    billboardGui.AlwaysOnTop = true
+    billboardGui.LightInfluence = 1 -- Make the UI visible even in dark areas
+    billboardGui.Parent = head
+    
+    -- Create Frame inside BillboardGui
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 1, 0)
+    frame.BackgroundTransparency = 0.5 -- Adjust transparency as needed
+    frame.BackgroundColor3 = Color3.new(1, 0, 0) -- Red color
+    frame.Parent = billboardGui
+end
+
+-- Function to handle enemies
+local function handleEnemies()
+    local players = game:GetService("Players")
+    local localPlayer = players.LocalPlayer
+    local playerName = localPlayer.Name
+    
+    -- Listen for new players being added
+    players.PlayerAdded:Connect(function(player)
+        if player.Name ~= playerName then
+            -- Listen for their character being added
+            player.CharacterAdded:Connect(function(character)
+                -- Create UI for the enemy
+                createEnemyUI(character)
+            end)
+        end
+    end)
+    
+    -- Create UI for existing players
+    for _, player in ipairs(players:GetPlayers()) do
+        if player.Name ~= playerName then
+            local character = player.Character
+            if character then
+                createEnemyUI(character)
+            end
+        end
+    end
+end
+
+-- Start handling enemies
+handleEnemies()
+
+-- Remove UI when enemy leaves
+game.Players.PlayerRemoving:Connect(function(player)
+    local screenGui = screenGui:FindFirstChild("EnemyHighlighterGui")
+    if screenGui then
+        local billboardGui = screenGui:FindFirstChild(player.Name)
+        if billboardGui then
+            billboardGui:Destroy()
+        end
+    end
+end)
+
 -- Function to toggle the button text and adjust hitbox visibility
 local function toggleButtonText()
     local isOn = button.Text == "On"
@@ -144,188 +212,31 @@ local function toggleButtonText()
     end
 end
 
--- Function to apply hitbox changes to new players
-local function applyHitboxToNewPlayers()
-    local isOn = button.Text == "On"
+-- Toggle button functionality
+button.MouseButton1Click:Connect(toggleButtonText)
+
+-- Highlight button functionality
+highlightButton.MouseButton1Click:Connect(function()
+    local isHighlighted = highlightButton.Text == "Highlight Enemies"
     
-    if isOn then
-        local players = game:GetService("Players")
-        local localPlayer = players.LocalPlayer
-        local playerName = localPlayer.Name
-        local newSize = math.clamp(tonumber(sizeInput.Text) or 13, 1, 25) -- Clamp size between 1 and 25
-        
-        players.PlayerAdded:Connect(function(player)
-            if player.Name ~= playerName then
-                local character = player.Character
-                if character then
-                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                    local headHB = character:FindFirstChild("HeadHB")
-                    local leftUpperLeg = character:FindFirstChild("LeftUpperLeg")
-                    local rightUpperLeg = character:FindFirstChild("RightUpperLeg")
-                    
-                    if humanoidRootPart then
-                        humanoidRootPart.Size = Vector3.new(newSize, newSize, newSize)
-                        humanoidRootPart.Transparency = 1 -- Hide if on
-                        humanoidRootPart.CanCollide = false -- Disable collision if on
-                    end
-                    if headHB then
-                        headHB.Size = Vector3.new(newSize, newSize, newSize)
-                        headHB.Transparency = 1 -- Hide if on
-                        headHB.CanCollide = false -- Disable collision if on
-                    end
-                    if leftUpperLeg then
-                        leftUpperLeg.Size = Vector3.new(newSize, newSize, newSize)
-                        leftUpperLeg.Transparency = 1 -- Hide if on
-                        leftUpperLeg.CanCollide = false -- Disable collision if on
-                    end
-                    if rightUpperLeg then
-                        rightUpperLeg.Size = Vector3.new(newSize, newSize, newSize)
-                        rightUpperLeg.Transparency = 1 -- Hide if on
-                        rightUpperLeg.CanCollide = false -- Disable collision if on
-                    end
-                end
-            end
-        end)
-    end
-end
-
--- Function to toggle enemy highlighting
-local function toggleEnemyHighlight()
-    local isHighlighting = highlightButton.Text == "Highlight Enemies"
-
-    if isHighlighting then
-        highlightButton.Text = "Unhighlight Enemies"
+    if isHighlighted then
+        highlightButton.Text = "Highlighted"
         highlightButton.TextColor3 = Color3.new(0, 1, 0) -- Change text color to green
         
-        -- Function to highlight enemies through walls
-        local function highlightEnemies()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            local playerName = localPlayer.Name
-
-            for _, player in ipairs(players:GetPlayers()) do
-                if player.Name ~= playerName then
-                    local character = player.Character
-                    if character then
-                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                        if humanoidRootPart then
-                            -- Apply highlighting effect
-                            local highlight = Instance.new("BoxHandleAdornment")
-                            highlight.Size = humanoidRootPart.Size
-                            highlight.Color3 = Color3.new(1, 0, 0) -- Red color
-                            highlight.Transparency = 0.5 -- Semi-transparent
-                            highlight.AlwaysOnTop = true
-                            highlight.Adornee = humanoidRootPart
-                            highlight.Parent = humanoidRootPart
-                        end
-                    end
-                end
-            end
-        end
-
-        -- Call function to highlight enemies
-        highlightEnemies()
-
+        -- Create UI for enemies
+        handleEnemies()
     else
         highlightButton.Text = "Highlight Enemies"
         highlightButton.TextColor3 = Color3.new(1, 0, 0) -- Change text color to red
-
-        -- Function to remove highlighted enemies
-        local function removeEnemyHighlight()
-            local players = game:GetService("Players")
-            local localPlayer = players.LocalPlayer
-            local playerName = localPlayer.Name
-
-            for _, player in ipairs(players:GetPlayers()) do
-                if player.Name ~= playerName then
-                    local character = player.Character
-                    if character then
-                        local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-                        if humanoidRootPart then
-                            -- Remove all adornments (highlights)
-                            for _, child in ipairs(humanoidRootPart:GetChildren()) do
-                                if child:IsA("BoxHandleAdornment") then
-                                    child:Destroy()
-                                end
-                            end
-                        end
-                    end
+        
+        -- Remove UI for enemies
+        local screenGui = screenGui:FindFirstChild("EnemyHighlighterGui")
+        if screenGui then
+            for _, enemy in ipairs(screenGui:GetChildren()) do
+                if enemy:IsA("BillboardGui") then
+                    enemy:Destroy()
                 end
             end
-        end
-
-        -- Call function to remove highlights
-        removeEnemyHighlight()
-    end
-end
-
--- Toggle text when button is clicked
-button.MouseButton1Click:Connect(function()
-    toggleButtonText()
-    -- Add any other actions you want to perform on button click here
-end)
-
--- Toggle enemy highlighting when button is clicked
-highlightButton.MouseButton1Click:Connect(function()
-    toggleEnemyHighlight()
-    -- Add any other actions you want to perform on button click here
-end)
-
--- Call function to apply hitbox changes to new players when script starts
-applyHitboxToNewPlayers()
-
--- Create a function to get players' name
-local function getPlayersName()
-    for _, v in pairs(game:GetChildren()) do
-        if v.ClassName == "Players" then
-            return v.Name
-        end
-    end
-end
-
--- Variables to track dragging state
-local dragging = false
-local dragInput, dragStart, startPos
-
--- Function to update the position of the frame and button
-local function updateInput(input)
-    local delta = input.Position - dragStart
-    scrollingFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-end
-
--- Input event listeners for dragging
-dragArea.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
-        dragStart = input.Position
-        startPos = scrollingFrame.Position
-
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
-    end
-end)
-
-dragArea.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        dragInput = input
-    end
-end)
-
-game:GetService("UserInputService").InputChanged:Connect(function(input)
-    if dragging and input == dragInput then
-        updateInput(input)
-    end
-end)
-
--- Toggle visibility with 'P' key
-game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then -- Check that the game is not processing the input for another action
-        if input.KeyCode == Enum.KeyCode.P then
-            scrollingFrame.Visible = not scrollingFrame.Visible
-            sizeInput.Position = UDim2.new(sizeInput.Position.X.Scale, sizeInput.Position.X.Offset, button.Position.Y.Scale, button.Position.Y.Offset) -- Align sizeInput vertically with button
         end
     end
 end)
