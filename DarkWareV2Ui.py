@@ -17,7 +17,7 @@ def validate_key():
         messagebox.showerror("Error", "Invalid key.")
 
 def copy_key_link():
-    link = ""
+    link = "https://raw.githubusercontent.com/DarkWareV2/DarkWareV2Scripts/main/Key.txt"
     pyperclip.copy(link)
     messagebox.showinfo("Copied", "Key link copied to clipboard.")
 
