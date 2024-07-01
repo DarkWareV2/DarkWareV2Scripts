@@ -5,7 +5,7 @@ import pyperclip
 
 script_dir = os.path.dirname(__file__)
 
-CORRECT_KEY = "OwnerKey"
+CORRECT_KEY = "FreeKeyYesSir"
 
 def validate_key():
     entered_key = key_entry.get().strip()
@@ -17,7 +17,7 @@ def validate_key():
         messagebox.showerror("Error", "Invalid key.")
 
 def copy_key_link():
-    link = "https://direct-link.net/1192813/darkwarev2-key-system"
+    link = ""
     pyperclip.copy(link)
     messagebox.showinfo("Copied", "Key link copied to clipboard.")
 
