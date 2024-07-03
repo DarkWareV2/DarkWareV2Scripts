@@ -164,7 +164,7 @@ def show_main_window(normal_key=True):
         settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
         if os.path.exists(settings_button_path):
             settings_button_image = PhotoImage(file=settings_button_path)
-            settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=open_settings_window)
+            settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=toggle_topmost)
             settings_button.image = settings_button_image
             canvas.create_window(button_margin, button_margin, anchor='nw', window=settings_button)
 
@@ -178,37 +178,6 @@ def show_main_window(normal_key=True):
 
     else:
         print(f"Error: The background image 'DarkWareV2Background.png' does not exist in the directory '{script_dir}'.")
-
-def open_settings_window():
-    settings_window = tk.Toplevel(root)
-    settings_window.overrideredirect(True)  # Remove window decorations
-    settings_window.geometry("400x300")
-
-    settings_background_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsBackground.png")
-    if os.path.exists(settings_background_path):
-        settings_background_image = PhotoImage(file=settings_background_path)
-        settings_background_label = tk.Label(settings_window, image=settings_background_image, bd=0, highlightthickness=0)
-        settings_background_label.image = settings_background_image
-        settings_background_label.pack()
-
-        def close_settings_window():
-            settings_window.destroy()
-
-        close_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2ExitButton.png")
-        if os.path.exists(close_button_path):
-            close_button_image = PhotoImage(file=close_button_path)
-            close_button = tk.Button(settings_window, image=close_button_image, bd=0, highlightthickness=0, command=close_settings_window)
-            close_button.image = close_button_image
-            close_button.pack(anchor='ne', padx=10, pady=10)
-
-        toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost, state=tk.DISABLED)
-        toggle_topmost_button.pack(pady=20)
-
-        if key_entry.get().strip() == PREMIUM_KEY:
-            toggle_topmost_button.config(state=tk.NORMAL)
-
-    else:
-        print(f"Error: The settings background image 'DarkWareV2SettingsBackground.png' does not exist in the directory '{script_dir}'.")
 
 def close_window():
     root.destroy()
