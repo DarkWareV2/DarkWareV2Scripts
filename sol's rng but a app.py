@@ -93,12 +93,8 @@ class GameApp:
         # Save inventory to file
         self.save_inventory()
 
-        # Disable the roll button and set a cooldown
+        # Disable the roll button until an action is taken
         self.roll_button.config(state=tk.DISABLED)
-        self.root.after(ROLL_COOLDOWN, self.enable_roll_button)
-
-    def enable_roll_button(self):
-        self.roll_button.config(state=tk.NORMAL)
 
     def determine_rarity(self, roll):
         for rarity, probability in RARITY_PROBABILITIES.items():
@@ -137,6 +133,7 @@ class GameApp:
 
     def claim_item(self, msg_box, item_rarity):
         msg_box.destroy()
+        self.enable_roll_button()
         print(f"Item {item_rarity} claimed.")
 
     def skip_item(self, msg_box, item_rarity):
@@ -144,7 +141,11 @@ class GameApp:
         if item_rarity in self.inventory and self.inventory[item_rarity] > 0:
             self.inventory[item_rarity] -= 1
             self.save_inventory()
+        self.enable_roll_button()
         print(f"Item {item_rarity} skipped.")
+
+    def enable_roll_button(self):
+        self.roll_button.config(state=tk.NORMAL)
 
     def load_inventory(self):
         try:
@@ -166,7 +167,8 @@ class GameApp:
                 self.root.after_cancel(self.auto_roll_job)
 
     def auto_roll(self):
-        self.roll_item(show_message=True)
+        if self.roll_button.cget('state') == tk.NORMAL:
+            self.roll_item(show_message=True)
         self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
 
     def check_bertram_key(self, event):
