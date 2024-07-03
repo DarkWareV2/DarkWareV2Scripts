@@ -163,7 +163,10 @@ def close_window():
     root.destroy()
 
 root = tk.Tk()
-root.overrideredirect(True)
+root.overrideredirect(True)  # Remove window decorations
+
+# Configure window to be topmost
+root.wm_attributes("-topmost", 1)
 
 key_frame = tk.Frame(root)
 key_frame.pack(fill=tk.BOTH, expand=True)
