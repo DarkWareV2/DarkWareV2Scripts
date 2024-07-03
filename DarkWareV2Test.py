@@ -181,7 +181,7 @@ def show_main_window(normal_key=True):
 
 def open_settings_window():
     settings_window = tk.Toplevel(root)
-    settings_window.title("Settings")
+    settings_window.overrideredirect(True)  # Remove window decorations
     settings_window.geometry("400x300")
 
     settings_background_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsBackground.png")
@@ -191,13 +191,21 @@ def open_settings_window():
         settings_background_label.image = settings_background_image
         settings_background_label.pack()
 
+        def close_settings_window():
+            settings_window.destroy()
+
+        close_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2ExitButton.png")
+        if os.path.exists(close_button_path):
+            close_button_image = PhotoImage(file=close_button_path)
+            close_button = tk.Button(settings_window, image=close_button_image, bd=0, highlightthickness=0, command=close_settings_window)
+            close_button.image = close_button_image
+            close_button.pack(anchor='ne', padx=10, pady=10)
+
         toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost, state=tk.DISABLED)
         toggle_topmost_button.pack(pady=20)
 
         if key_entry.get().strip() == PREMIUM_KEY:
             toggle_topmost_button.config(state=tk.NORMAL)
-        else:
-            toggle_topmost_button.config(state=tk.DISABLED)
 
     else:
         print(f"Error: The settings background image 'DarkWareV2SettingsBackground.png' does not exist in the directory '{script_dir}'.")
