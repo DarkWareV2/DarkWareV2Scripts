@@ -16,10 +16,14 @@ topmost_enabled = 0
 
 def validate_key():
     entered_key = key_entry.get().strip()
-    if entered_key == CORRECT_KEY or entered_key == PREMIUM_KEY:
+    if entered_key == CORRECT_KEY:
         messagebox.showinfo("Success", "Key is valid.")
         key_entry.delete(0, tk.END)
-        show_main_window()
+        show_main_window(normal_key=True)
+    elif entered_key == PREMIUM_KEY:
+        messagebox.showinfo("Success", "Premium key is valid.")
+        key_entry.delete(0, tk.END)
+        show_main_window(normal_key=False)
     else:
         messagebox.showerror("Error", "Invalid key.")
 
@@ -47,13 +51,6 @@ def toggle_topmost():
         root.attributes("-topmost", 1)  # Enable topmost
         topmost_enabled = 1
 
-def toggle_topmost_with_key():
-    entered_key = simpledialog.askstring("Enter Premium Key", "Enter Premium key to enable topmost:")
-    if entered_key == PREMIUM_KEY:
-        toggle_topmost()
-    else:
-        messagebox.showerror("Invalid Key", "Premium key is incorrect.")
-
 def inject_button_click():
     if check_windows_version():
         injector_path = os.path.join(script_dir, "Injector", "DarkWareV2Injector.exe")
@@ -66,7 +63,7 @@ def inject_button_click():
         if response == "yes":
             open_buy_link()
 
-def show_main_window():
+def show_main_window(normal_key=True):
     key_frame.pack_forget()
     main_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -164,7 +161,11 @@ def show_main_window():
             injector_button.image = injector_button_image
             canvas.create_window(image_width - injector_button_image.width() - button_margin, image_height - injector_button_image.height() - button_margin, anchor='nw', window=injector_button)
 
-        settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
+        if normal_key:
+            settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsLocked.png")
+        else:
+            settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
+        
         if os.path.exists(settings_button_path):
             settings_button_image = PhotoImage(file=settings_button_path)
             settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=open_settings_window)
@@ -184,10 +185,18 @@ def open_settings_window():
         settings_background_image = PhotoImage(file=settings_background_path)
         settings_background_label = tk.Label(settings_window, image=settings_background_image)
         settings_background_label.pack(fill=tk.BOTH, expand=True)
+        settings_background_label.image = settings_background_image
 
-        toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost_with_key)
-        toggle_topmost_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
+        if key_entry.get().strip() == PREMIUM_KEY:
+            toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost)
+            toggle_topmost_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+        else:
+            lock_image_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Lock.png")
+            if os.path.exists(lock_image_path):
+                lock_image = PhotoImage(file=lock_image_path)
+                lock_label = tk.Label(settings_window, image=lock_image)
+                lock_label.pack(fill=tk.BOTH, expand=True)
+                lock_label.image = lock_image
     else:
         print(f"Error: The settings background image 'DarkWareV2SettingsBackground.png' does not exist in the directory '{script_dir}'.")
 
