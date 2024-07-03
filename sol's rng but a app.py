@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import json
-import webbrowser
+import pygame
+import os
 
 # Constants
 WINDOW_WIDTH = 800
@@ -13,8 +14,8 @@ AUTO_ROLL_TEXT = "Auto Roll"
 DATA_FILE = "inventory.json"
 AUTO_ROLL_INTERVAL = 1000  # in milliseconds (1 second)
 ROLL_COOLDOWN = 500  # in milliseconds (0.5 seconds)
-SOL_S_URL = "https://www.youtube.com/watch?v=7VHbSCJyxyE"
 SOL_S_DELAY = 23000  # 23 seconds delay for Sol's item
+SOUND_FILE_PATH = os.path.join(os.getcwd(), "Sounds SFX", "heavenly-music-gaming-sound-effect-hd-mp3cut.mp3")
 
 # Rarity definitions
 RARITIES = {
@@ -72,6 +73,9 @@ class GameApp:
         # Variables for managing auto-roll state and cooldown
         self.auto_roll_job = None
 
+        # Initialize pygame mixer
+        pygame.mixer.init()
+
     def roll_item(self, show_message=True):
         rarity_roll = random.random()  # Get a random number between 0 and 1
         item_rarity = self.determine_rarity(rarity_roll)
@@ -106,7 +110,7 @@ class GameApp:
         inventory_text = "Inventory:\n"
         for rarity, count in self.inventory.items():
             inventory_text += f"{rarity}: {count}\n"
-        self.show_message(inventory_text, "Inventory")
+        messagebox.showinfo("Inventory", inventory_text)
 
     def show_message(self, msg, item_rarity):
         msg_box = tk.Toplevel(self.root)
@@ -115,7 +119,8 @@ class GameApp:
 
         # If "Sol's" item is rolled, play sound and disable buttons for 23 seconds
         if item_rarity == "Sol's":
-            webbrowser.open(SOL_S_URL)
+            pygame.mixer.music.load(SOUND_FILE_PATH)
+            pygame.mixer.music.play()
             claim_button = tk.Button(msg_box, text="Claim", state=tk.DISABLED, command=lambda: self.claim_item(msg_box, item_rarity))
             skip_button = tk.Button(msg_box, text="Skip", state=tk.DISABLED, command=lambda: self.skip_item(msg_box, item_rarity))
             self.root.after(SOL_S_DELAY, lambda: self.enable_buttons(claim_button, skip_button))
