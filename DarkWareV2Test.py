@@ -161,16 +161,20 @@ def show_main_window(normal_key=True):
             injector_button.image = injector_button_image
             canvas.create_window(image_width - injector_button_image.width() - button_margin, image_height - injector_button_image.height() - button_margin, anchor='nw', window=injector_button)
 
-        if normal_key:
-            settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsLocked.png")
-        else:
-            settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
-        
+        settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
         if os.path.exists(settings_button_path):
             settings_button_image = PhotoImage(file=settings_button_path)
             settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=open_settings_window)
             settings_button.image = settings_button_image
             canvas.create_window(button_margin, button_margin, anchor='nw', window=settings_button)
+
+            if normal_key:
+                lock_image_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Lock.png")
+                if os.path.exists(lock_image_path):
+                    lock_image = PhotoImage(file=lock_image_path)
+                    lock_label = tk.Label(main_frame, image=lock_image, bd=0, highlightthickness=0)
+                    lock_label.image = lock_image
+                    canvas.create_window(button_margin, button_margin, anchor='nw', window=lock_label)
 
     else:
         print(f"Error: The background image 'DarkWareV2Background.png' does not exist in the directory '{script_dir}'.")
@@ -183,20 +187,18 @@ def open_settings_window():
     settings_background_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsBackground.png")
     if os.path.exists(settings_background_path):
         settings_background_image = PhotoImage(file=settings_background_path)
-        settings_background_label = tk.Label(settings_window, image=settings_background_image)
-        settings_background_label.pack(fill=tk.BOTH, expand=True)
+        settings_background_label = tk.Label(settings_window, image=settings_background_image, bd=0, highlightthickness=0)
         settings_background_label.image = settings_background_image
+        settings_background_label.pack()
+
+        toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost, state=tk.DISABLED)
+        toggle_topmost_button.pack(pady=20)
 
         if key_entry.get().strip() == PREMIUM_KEY:
-            toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost)
-            toggle_topmost_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+            toggle_topmost_button.config(state=tk.NORMAL)
         else:
-            lock_image_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Lock.png")
-            if os.path.exists(lock_image_path):
-                lock_image = PhotoImage(file=lock_image_path)
-                lock_label = tk.Label(settings_window, image=lock_image)
-                lock_label.pack(fill=tk.BOTH, expand=True)
-                lock_label.image = lock_image
+            toggle_topmost_button.config(state=tk.DISABLED)
+
     else:
         print(f"Error: The settings background image 'DarkWareV2SettingsBackground.png' does not exist in the directory '{script_dir}'.")
 
