@@ -10,7 +10,8 @@ ROLL_BUTTON_TEXT = "Roll"
 INVENTORY_BUTTON_TEXT = "Inventory"
 AUTO_ROLL_TEXT = "Auto Roll"
 DATA_FILE = "inventory.json"
-AUTO_ROLL_INTERVAL = 2000  # in milliseconds (2 seconds)
+AUTO_ROLL_INTERVAL = 1000  # in milliseconds (1 second)
+ROLL_COOLDOWN = 500  # in milliseconds (0.5 seconds)
 
 # Rarity definitions
 RARITIES = {
@@ -59,6 +60,9 @@ class GameApp:
         self.auto_roll_checkbutton = tk.Checkbutton(self.main_frame, text=AUTO_ROLL_TEXT, variable=self.auto_roll_var, command=self.toggle_auto_roll)
         self.auto_roll_checkbutton.pack(side=tk.TOP, anchor="ne", padx=20, pady=20)
 
+        # Variables for managing auto-roll state and cooldown
+        self.auto_roll_job = None
+
     def roll_item(self, show_message=True):
         rarity_roll = random.random()  # Get a random number between 0 and 1
         item_rarity = self.determine_rarity(rarity_roll)
@@ -75,6 +79,13 @@ class GameApp:
 
         # Save inventory to file
         self.save_inventory()
+
+        # Disable the roll button and set a cooldown
+        self.roll_button.config(state=tk.DISABLED)
+        self.root.after(ROLL_COOLDOWN, self.enable_roll_button)
+
+    def enable_roll_button(self):
+        self.roll_button.config(state=tk.NORMAL)
 
     def determine_rarity(self, roll):
         for rarity, probability in RARITY_PROBABILITIES.items():
@@ -105,16 +116,16 @@ class GameApp:
 
     def toggle_auto_roll(self):
         if self.auto_roll_var.get():
-            self.auto_roll()
+            self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
         else:
-            self.root.after_cancel(self.auto_roll_job)
+            if self.auto_roll_job:
+                self.root.after_cancel(self.auto_roll_job)
 
     def auto_roll(self):
-        self.roll_item(show_message=False)
+        self.roll_item(show_message=True)
         self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = GameApp(root)
     root.mainloop()
-
