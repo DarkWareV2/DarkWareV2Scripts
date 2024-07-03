@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import PhotoImage, messagebox
 import os
 import pyperclip
+import platform
+import webbrowser
+import subprocess
 
 script_dir = os.path.dirname(__file__)
 
@@ -20,6 +23,28 @@ def copy_key_link():
     link = "https://raw.githubusercontent.com/DarkWareV2/DarkWareV2Scripts/main/Key.txt"
     pyperclip.copy(link)
     messagebox.showinfo("Copied", "Key link copied to clipboard.")
+
+def check_windows_version():
+    version = platform.version()
+    if "Professional" in version or "Pro" in version:
+        return True
+    return False
+
+def open_buy_link():
+    buy_link = "https://www.productkeys.com/product/windows-11-professional-retail/?utm_source=Google%20Shopping&utm_campaign=ProductKeys-GoogleFeed-DK&utm_medium=cpc&utm_term=5041&gad_source=1&gclid=Cj0KCQjw7ZO0BhDYARIsAFttkChb_QtB3x6Yteomf5_lD35Y0SPBWAqUMFc13U4iTHv8nOBwNlsXZYgaAhgQEALw_wcB"
+    webbrowser.open(buy_link)
+
+def inject_button_click():
+    if check_windows_version():
+        injector_path = os.path.join(script_dir, "Injector", "DarkWareV2Injector.exe")
+        if os.path.exists(injector_path):
+            subprocess.run(injector_path, check=True)
+        else:
+            messagebox.showerror("Error", "Injector executable not found.")
+    else:
+        response = messagebox.askquestion("Need Windows Pro Version", "You need a Windows Pro version. Would you like to buy it?")
+        if response == "yes":
+            open_buy_link()
 
 def show_main_window():
     key_frame.pack_forget()
@@ -115,12 +140,7 @@ def show_main_window():
         injector_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Injector.png")
         if os.path.exists(injector_button_path):
             injector_button_image = PhotoImage(file=injector_button_path)
-
-            def on_injector_click():
-                # Placeholder function
-                print("Injector button clicked")
-
-            injector_button = tk.Button(main_frame, image=injector_button_image, bd=0, highlightthickness=0, command=on_injector_click)
+            injector_button = tk.Button(main_frame, image=injector_button_image, bd=0, highlightthickness=0, command=inject_button_click)
             injector_button.image = injector_button_image
             canvas.create_window(image_width - injector_button_image.width() - button_margin, image_height - injector_button_image.height() - button_margin, anchor='nw', window=injector_button)
 
