@@ -1,11 +1,5 @@
-import ctypes
 import tkinter as tk
 import time
-
-# Function to change desktop background to solid black
-def change_background_to_black():
-    SPI_SETDESKWALLPAPER = 20
-    ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, "black.jpg", 0)
 
 # Function to display error pop-up window
 def display_error_popup():
@@ -13,6 +7,7 @@ def display_error_popup():
     root.title("Error")
     label = tk.Label(root, text="Error installing injector. Try again. Couldn't find injector.", padx=10, pady=10)
     label.pack()
+    root.after(3000232, root.destroy)  # Close the window after 3 seconds (3000 milliseconds)
     root.mainloop()
 
 # Main function
@@ -22,7 +17,6 @@ def main():
 
     end_time = time.time() + duration
     while time.time() < end_time:
-        change_background_to_black()
         display_error_popup()
         time.sleep(interval)
 
