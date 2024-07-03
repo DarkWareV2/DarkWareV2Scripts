@@ -159,14 +159,14 @@ def show_main_window(normal_key=True):
             injector_button_image = PhotoImage(file=injector_button_path)
             injector_button = tk.Button(main_frame, image=injector_button_image, bd=0, highlightthickness=0, command=inject_button_click)
             injector_button.image = injector_button_image
-            canvas.create_window(image_width - injector_button_image.width() - button_margin, image_height - injector_button_image.height() - button_margin, anchor='nw', window=injector_button)
+            canvas.create_window(button_margin, image_height - injector_button_image.height() - button_margin, anchor='sw', window=injector_button)
 
         settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
         if os.path.exists(settings_button_path):
             settings_button_image = PhotoImage(file=settings_button_path)
             settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=toggle_topmost)
             settings_button.image = settings_button_image
-            canvas.create_window(button_margin, button_margin, anchor='nw', window=settings_button)
+            canvas.create_window(image_width - settings_button_image.width() - button_margin, button_margin, anchor='nw', window=settings_button)
 
             if normal_key:
                 lock_image_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Lock.png")
@@ -174,7 +174,7 @@ def show_main_window(normal_key=True):
                     lock_image = PhotoImage(file=lock_image_path)
                     lock_label = tk.Label(main_frame, image=lock_image, bd=0, highlightthickness=0)
                     lock_label.image = lock_image
-                    canvas.create_window(button_margin, button_margin, anchor='nw', window=lock_label)
+                    canvas.create_window(image_width - settings_button_image.width() - lock_image.width() - button_margin * 2, button_margin, anchor='nw', window=lock_label)
 
     else:
         print(f"Error: The background image 'DarkWareV2Background.png' does not exist in the directory '{script_dir}'.")
@@ -200,3 +200,4 @@ copy_link_button = tk.Button(key_frame, text="Copy Key Link", font=('Arial', 14)
 copy_link_button.pack(pady=20, side=tk.LEFT, padx=10)
 
 root.mainloop()
+<
