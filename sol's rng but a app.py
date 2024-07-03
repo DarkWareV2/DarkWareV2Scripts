@@ -65,13 +65,14 @@ class GameApp:
         self.auto_roll_checkbutton = tk.Checkbutton(self.main_frame, text=AUTO_ROLL_TEXT, variable=self.auto_roll_var, command=self.toggle_auto_roll)
         self.auto_roll_checkbutton.pack(side=tk.TOP, anchor="ne", padx=20, pady=20)
 
-        # Entry for BertramKey
-        self.bertram_key_entry = tk.Entry(self.main_frame)
-        self.bertram_key_entry.pack(pady=10)
-        self.bertram_key_entry.bind("<Return>", self.check_bertram_key)
+        # Entry for commands
+        self.command_entry = tk.Entry(self.main_frame)
+        self.command_entry.pack(pady=10)
+        self.command_entry.bind("<Return>", self.check_command)
 
         # Variables for managing auto-roll state and cooldown
         self.auto_roll_job = None
+        self.current_message_box = None
 
         # Initialize pygame mixer
         pygame.mixer.init()
@@ -109,7 +110,11 @@ class GameApp:
         messagebox.showinfo("Inventory", inventory_text)
 
     def show_message(self, msg, item_rarity):
+        if self.current_message_box is not None and self.current_message_box.winfo_exists():
+            self.current_message_box.destroy()
+
         msg_box = tk.Toplevel(self.root)
+        self.current_message_box = msg_box
         msg_box.title("Message")
         tk.Label(msg_box, text=msg).pack(pady=10)
 
@@ -169,12 +174,29 @@ class GameApp:
     def auto_roll(self):
         if self.roll_button.cget('state') == tk.NORMAL:
             self.roll_item(show_message=True)
-        self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
+            self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
+        else:
+            self.auto_roll_job = self.root.after(100, self.auto_roll)
 
-    def check_bertram_key(self, event):
-        if self.bertram_key_entry.get() == "BertramKey":
-            self.show_message(f"You rolled: Sol's", "Sol's")
-            self.bertram_key_entry.delete(0, tk.END)
+    def check_command(self, event):
+        command = self.command_entry.get().strip()
+        self.command_entry.delete(0, tk.END)
+        if command.startswith("/give @s "):
+            item_name = command.split("/give @s ")[1].strip()
+            for rarity in RARITIES.values():
+                if rarity.lower() == item_name.lower():
+                    self.add_item_to_inventory(rarity)
+                    self.show_message(f"You received: {rarity}", rarity)
+                    return
+
+            self.show_message("Invalid item name!", "Error")
+
+    def add_item_to_inventory(self, item_rarity):
+        if item_rarity in self.inventory:
+            self.inventory[item_rarity] += 1
+        else:
+            self.inventory[item_rarity] = 1
+        self.save_inventory()
 
 if __name__ == "__main__":
     root = tk.Tk()
