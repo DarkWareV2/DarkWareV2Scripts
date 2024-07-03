@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import PhotoImage, messagebox
+from tkinter import PhotoImage, messagebox, simpledialog
 import os
 import pyperclip
 import platform
@@ -9,10 +9,14 @@ import subprocess
 script_dir = os.path.dirname(__file__)
 
 CORRECT_KEY = "FreeKeyYesSir"
+PREMIUM_KEY = "PremiumKeyYesSir"
+
+# Initial state of topmost (0 = off, 1 = on)
+topmost_enabled = 0
 
 def validate_key():
     entered_key = key_entry.get().strip()
-    if entered_key == CORRECT_KEY:
+    if entered_key == CORRECT_KEY or entered_key == PREMIUM_KEY:
         messagebox.showinfo("Success", "Key is valid.")
         key_entry.delete(0, tk.END)
         show_main_window()
@@ -33,6 +37,22 @@ def check_windows_version():
 def open_buy_link():
     buy_link = "https://www.productkeys.com/product/windows-11-professional-retail/?utm_source=Google%20Shopping&utm_campaign=ProductKeys-GoogleFeed-DK&utm_medium=cpc&utm_term=5041&gad_source=1&gclid=Cj0KCQjw7ZO0BhDYARIsAFttkChb_QtB3x6Yteomf5_lD35Y0SPBWAqUMFc13U4iTHv8nOBwNlsXZYgaAhgQEALw_wcB"
     webbrowser.open(buy_link)
+
+def toggle_topmost():
+    global topmost_enabled
+    if topmost_enabled == 1:
+        root.attributes("-topmost", 0)  # Disable topmost
+        topmost_enabled = 0
+    else:
+        root.attributes("-topmost", 1)  # Enable topmost
+        topmost_enabled = 1
+
+def toggle_topmost_with_key():
+    entered_key = simpledialog.askstring("Enter Premium Key", "Enter Premium key to enable topmost:")
+    if entered_key == PREMIUM_KEY:
+        toggle_topmost()
+    else:
+        messagebox.showerror("Invalid Key", "Premium key is incorrect.")
 
 def inject_button_click():
     if check_windows_version():
@@ -144,29 +164,38 @@ def show_main_window():
             injector_button.image = injector_button_image
             canvas.create_window(image_width - injector_button_image.width() - button_margin, image_height - injector_button_image.height() - button_margin, anchor='nw', window=injector_button)
 
-        executer_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Executer.png")
-        if os.path.exists(executer_button_path):
-            executer_button_image = PhotoImage(file=executer_button_path)
-
-            def on_executer_click():
-                # Placeholder function
-                print("Executer button clicked")
-
-            executer_button = tk.Button(main_frame, image=executer_button_image, bd=0, highlightthickness=0, command=on_executer_click)
-            executer_button.image = executer_button_image
-            canvas.create_window(image_width - injector_button_image.width() - executer_button_image.width() - button_margin * 2, image_height - executer_button_image.height() - button_margin, anchor='nw', window=executer_button)
+        settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2Settings.png")
+        if os.path.exists(settings_button_path):
+            settings_button_image = PhotoImage(file=settings_button_path)
+            settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=open_settings_window)
+            settings_button.image = settings_button_image
+            canvas.create_window(button_margin, button_margin, anchor='nw', window=settings_button)
 
     else:
         print(f"Error: The background image 'DarkWareV2Background.png' does not exist in the directory '{script_dir}'.")
+
+def open_settings_window():
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Settings")
+    settings_window.geometry("400x300")
+
+    settings_background_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsBackground.png")
+    if os.path.exists(settings_background_path):
+        settings_background_image = PhotoImage(file=settings_background_path)
+        settings_background_label = tk.Label(settings_window, image=settings_background_image)
+        settings_background_label.pack(fill=tk.BOTH, expand=True)
+
+        toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost_with_key)
+        toggle_topmost_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+    else:
+        print(f"Error: The settings background image 'DarkWareV2SettingsBackground.png' does not exist in the directory '{script_dir}'.")
 
 def close_window():
     root.destroy()
 
 root = tk.Tk()
-root.overrideredirect(True)  # Remove window decorations
-
-# Configure window to be topmost
-root.wm_attributes("-topmost", 1)
+root.overrideredirect(True)
 
 key_frame = tk.Frame(root)
 key_frame.pack(fill=tk.BOTH, expand=True)
