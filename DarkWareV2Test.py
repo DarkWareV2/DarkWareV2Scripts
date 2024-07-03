@@ -2,7 +2,7 @@ import ctypes
 import tkinter as tk
 import time
 
-# Function to change desktop background to black
+# Function to change desktop background to solid black
 def change_background_to_black():
     SPI_SETDESKWALLPAPER = 20
     ctypes.windll.user32.SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, "black.jpg", 0)
