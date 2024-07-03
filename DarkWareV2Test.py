@@ -1,9 +1,10 @@
-import pyautogui
+import subprocess
 import time
+import keyboard
 
-# Function to rotate the screen
+# Function to rotate screen
 def rotate_screen():
-    pyautogui.hotkey('ctrl', 'alt', 'down')
+    subprocess.run(["DisplaySwitch.exe", "/rotate"])
 
 # Main function
 def main():
@@ -14,9 +15,4 @@ def main():
     while time.time() < end_time:
         rotate_screen()
         time.sleep(interval)
-
-    # Reset screen rotation at the end (optional)
-    pyautogui.hotkey('ctrl', 'alt', 'up')
-
-if __name__ == "__main__":
-    main()
+        keyboard.press_and_release('esc') 
