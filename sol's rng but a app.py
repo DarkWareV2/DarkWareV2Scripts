@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 import json
+import webbrowser
 
 # Constants
 WINDOW_WIDTH = 800
@@ -12,6 +13,8 @@ AUTO_ROLL_TEXT = "Auto Roll"
 DATA_FILE = "inventory.json"
 AUTO_ROLL_INTERVAL = 1000  # in milliseconds (1 second)
 ROLL_COOLDOWN = 500  # in milliseconds (0.5 seconds)
+SOL_S_URL = "https://www.youtube.com/watch?v=7VHbSCJyxyE"
+SOL_S_DELAY = 23000  # 23 seconds delay for Sol's item
 
 # Rarity definitions
 RARITIES = {
@@ -20,7 +23,8 @@ RARITIES = {
     3: "Rare",
     4: "Epic",
     5: "Legendary",
-    6: "Rip, nothing"
+    6: "Sol's",
+    7: "Rip, nothing"
 }
 
 # Probabilities (cumulative)
@@ -28,9 +32,9 @@ RARITY_PROBABILITIES = {
     1: 0.50,   # 50% for Common
     2: 0.85,   # 35% for Uncommon (50% + 35%)
     3: 0.95,   # 10% for Rare (50% + 35% + 10%)
-    4: 0.995,  # 5% for Epic (50% + 35% + 10% + 5%)
-    5: 0.996,  # 0.1% for Legendary (50% + 35% + 10% + 5% + 0.1%)
-    6: 1.00    # Remainder for "Rip, nothing"
+    4: 0.99,   # 4% for Epic (50% + 35% + 10% + 4%)
+    5: 0.999,  # 1% for Legendary (50% + 35% + 10% + 4% + 1%)
+    6: 1.00    # 0.1% for Sol's (50% + 35% + 10% + 4% + 1% + 0.1%)
 }
 
 class GameApp:
@@ -60,6 +64,11 @@ class GameApp:
         self.auto_roll_checkbutton = tk.Checkbutton(self.main_frame, text=AUTO_ROLL_TEXT, variable=self.auto_roll_var, command=self.toggle_auto_roll)
         self.auto_roll_checkbutton.pack(side=tk.TOP, anchor="ne", padx=20, pady=20)
 
+        # Entry for BertramKey
+        self.bertram_key_entry = tk.Entry(self.main_frame)
+        self.bertram_key_entry.pack(pady=10)
+        self.bertram_key_entry.bind("<Return>", self.check_bertram_key)
+
         # Variables for managing auto-roll state and cooldown
         self.auto_roll_job = None
 
@@ -67,7 +76,7 @@ class GameApp:
         rarity_roll = random.random()  # Get a random number between 0 and 1
         item_rarity = self.determine_rarity(rarity_roll)
         if show_message:
-            self.show_message(f"You rolled: {item_rarity}")
+            self.show_message(f"You rolled: {item_rarity}", item_rarity)
         else:
             print(f"You rolled: {item_rarity}")
 
@@ -97,10 +106,40 @@ class GameApp:
         inventory_text = "Inventory:\n"
         for rarity, count in self.inventory.items():
             inventory_text += f"{rarity}: {count}\n"
-        self.show_message(inventory_text)
+        self.show_message(inventory_text, "Inventory")
 
-    def show_message(self, msg):
-        messagebox.showinfo("Message", msg)
+    def show_message(self, msg, item_rarity):
+        msg_box = tk.Toplevel(self.root)
+        msg_box.title("Message")
+        tk.Label(msg_box, text=msg).pack(pady=10)
+
+        # If "Sol's" item is rolled, play sound and disable buttons for 23 seconds
+        if item_rarity == "Sol's":
+            webbrowser.open(SOL_S_URL)
+            claim_button = tk.Button(msg_box, text="Claim", state=tk.DISABLED, command=lambda: self.claim_item(msg_box, item_rarity))
+            skip_button = tk.Button(msg_box, text="Skip", state=tk.DISABLED, command=lambda: self.skip_item(msg_box, item_rarity))
+            self.root.after(SOL_S_DELAY, lambda: self.enable_buttons(claim_button, skip_button))
+        else:
+            claim_button = tk.Button(msg_box, text="Claim", command=lambda: self.claim_item(msg_box, item_rarity))
+            skip_button = tk.Button(msg_box, text="Skip", command=lambda: self.skip_item(msg_box, item_rarity))
+
+        claim_button.pack(side=tk.LEFT, padx=20, pady=20)
+        skip_button.pack(side=tk.RIGHT, padx=20, pady=20)
+
+    def enable_buttons(self, claim_button, skip_button):
+        claim_button.config(state=tk.NORMAL)
+        skip_button.config(state=tk.NORMAL)
+
+    def claim_item(self, msg_box, item_rarity):
+        msg_box.destroy()
+        print(f"Item {item_rarity} claimed.")
+
+    def skip_item(self, msg_box, item_rarity):
+        msg_box.destroy()
+        if item_rarity in self.inventory and self.inventory[item_rarity] > 0:
+            self.inventory[item_rarity] -= 1
+            self.save_inventory()
+        print(f"Item {item_rarity} skipped.")
 
     def load_inventory(self):
         try:
@@ -124,6 +163,11 @@ class GameApp:
     def auto_roll(self):
         self.roll_item(show_message=True)
         self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
+
+    def check_bertram_key(self, event):
+        if self.bertram_key_entry.get() == "BertramKey":
+            self.show_message(f"You rolled: Sol's", "Sol's")
+            self.bertram_key_entry.delete(0, tk.END)
 
 if __name__ == "__main__":
     root = tk.Tk()
