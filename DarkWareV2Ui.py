@@ -5,6 +5,8 @@ import pyperclip
 import platform
 import webbrowser
 import subprocess
+import win32api
+import win32con
 
 script_dir = os.path.dirname(__file__)
 
@@ -12,16 +14,16 @@ CORRECT_KEY = "PermFreeKeyForJob483gfjn54jkghnytuhsdk49gjkemf39jhfgdgdfgdg4g¤GR
 CORRECT_KEY = "@p0NVB}vtJ[\l^r0<]6Y'?A^&XV0$+C08pg%/E`:£2Yg,EnbD~!)k3Vwu_6GQCr0MCU/)N1S3eRLm`niKVovQ5fdsiojfui45jg954jgfiogj5yioutjmgfkhjmytoihjfkglhjt6iohjfiho"
 PREMIUM_KEY = "GiftedByOwnerKey"
 
-
 # Initial state of topmost (0 = off, 1 = on)
 topmost_enabled = 0
+premium_enabled = False
 
 def validate_key():
     entered_key = key_entry.get().strip()
     if entered_key == CORRECT_KEY or entered_key == PREMIUM_KEY:
         messagebox.showinfo("Success", "Key is valid.")
         key_entry.delete(0, tk.END)
-        show_main_window()
+        show_main_window(entered_key == PREMIUM_KEY)
     else:
         messagebox.showerror("Error", "Invalid key.")
 
@@ -31,10 +33,16 @@ def copy_key_link():
     messagebox.showinfo("Copied", "Key link copied to clipboard.")
 
 def check_windows_version():
-    version = platform.version()
-    if "Professional" in version or "Pro" in version:
-        return True
-    return False
+    try:
+        # Get the product info using win32api
+        product_info = win32api.GetVersionEx()
+        # Windows 10 and 11 Pro have the product type 0x48
+        # Windows 8.1 Pro and 7 Pro have the product type 0x30
+        pro_product_types = [0x30, 0x48]
+        return product_info[4] in pro_product_types
+    except Exception as e:
+        print(f"Error checking Windows version: {e}")
+        return False
 
 def open_buy_link():
     buy_link = "https://www.productkeys.com/product/windows-11-professional-retail/?utm_source=Google%20Shopping&utm_campaign=ProductKeys-GoogleFeed-DK&utm_medium=cpc&utm_term=5041&gad_source=1&gclid=Cj0KCQjw7ZO0BhDYARIsAFttkChb_QtB3x6Yteomf5_lD35Y0SPBWAqUMFc13U4iTHv8nOBwNlsXZYgaAhgQEALw_wcB"
@@ -50,9 +58,13 @@ def toggle_topmost():
         topmost_enabled = 1
 
 def toggle_topmost_with_key():
+    global premium_enabled
     entered_key = simpledialog.askstring("Enter Premium Key", "Enter Premium key to enable topmost:")
     if entered_key == PREMIUM_KEY:
         toggle_topmost()
+        premium_enabled = True
+        apply_rainbow_outline(canvas, outline_rect_main)
+        apply_rainbow_outline(canvas, outline_rect_textbox)
     else:
         messagebox.showerror("Invalid Key", "Premium key is incorrect.")
 
@@ -68,7 +80,10 @@ def inject_button_click():
         if response == "yes":
             open_buy_link()
 
-def show_main_window():
+def show_main_window(is_premium):
+    global premium_enabled, outline_rect_main, outline_rect_textbox, canvas
+    premium_enabled = is_premium
+
     key_frame.pack_forget()
     main_frame.pack(fill=tk.BOTH, expand=True)
 
@@ -95,45 +110,15 @@ def show_main_window():
         text_box_y = (image_height - text_box_height) // 2
         canvas.create_window(text_box_x, text_box_y, anchor='nw', width=text_box_width, height=text_box_height, window=text_box)
 
-        # Rainbow outline animation for the text box
-        outline_rect = canvas.create_rectangle(text_box_x, text_box_y, text_box_x + text_box_width, text_box_y + text_box_height, width=10, outline='')
+        # Main window rainbow outline
+        outline_rect_main = canvas.create_rectangle(0, 0, image_width, image_height, width=10, outline='')
 
-        rainbow_colors = ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#8B00FF"]
-        num_colors = len(rainbow_colors)
-        color_index = 0
+        # Text box rainbow outline
+        outline_rect_textbox = canvas.create_rectangle(text_box_x, text_box_y, text_box_x + text_box_width, text_box_y + text_box_height, width=10, outline='')
 
-        def update_outline_color():
-            nonlocal color_index
-            color_index = (color_index + 1) % num_colors
-            next_color_index = (color_index + 1) % num_colors
-
-            current_color = rainbow_colors[color_index]
-            next_color = rainbow_colors[next_color_index]
-
-            blend_colors_smoothly(current_color, next_color, 0)
-
-        def blend_colors_smoothly(color1, color2, step):
-            def blend(color1, color2, ratio):
-                r1, g1, b1 = int(color1[1:3], 16), int(color1[3:5], 16), int(color1[5:], 16)
-                r2, g2, b2 = int(color2[1:3], 16), int(color2[3:5], 16), int(color2[5:], 16)
-
-                r = int(r1 * (1 - ratio) + r2 * ratio)
-                g = int(g1 * (1 - ratio) + g2 * ratio)
-                b = int(b1 * (1 - ratio) + b2 * ratio)
-
-                return f"#{r:02x}{g:02x}{b:02x}"
-
-            if step > 10:
-                return
-            
-            blend_color = blend(color1, color2, step / 10)
-            canvas.itemconfig(outline_rect, outline=blend_color)
-            root.after(50, blend_colors_smoothly, color1, color2, step + 1)
-
-            if step == 10:
-                root.after(200, update_outline_color)
-
-        update_outline_color()
+        if is_premium:
+            apply_rainbow_outline(canvas, outline_rect_main)
+            apply_rainbow_outline(canvas, outline_rect_textbox)
 
         # Function to handle window dragging
         def start_drag(event):
@@ -175,6 +160,44 @@ def show_main_window():
 
     else:
         print(f"Error: The background image 'DarkWareV2Background.png' does not exist in the directory '{script_dir}'.")
+
+def apply_rainbow_outline(canvas, outline_rect):
+    rainbow_colors = ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#8B00FF"]
+    num_colors = len(rainbow_colors)
+    color_index = 0
+
+    def update_outline_color():
+        nonlocal color_index
+        color_index = (color_index + 1) % num_colors
+        next_color_index = (color_index + 1) % num_colors
+
+        current_color = rainbow_colors[color_index]
+        next_color = rainbow_colors[next_color_index]
+
+        blend_colors_smoothly(current_color, next_color, 0)
+
+    def blend_colors_smoothly(color1, color2, step):
+        def blend(color1, color2, ratio):
+            r1, g1, b1 = int(color1[1:3], 16), int(color1[3:5], 16), int(color1[5:], 16)
+            r2, g2, b2 = int(color2[1:3], 16), int(color2[3:5], 16), int(color2[5:], 16)
+
+            r = int(r1 * (1 - ratio) + r2 * ratio)
+            g = int(g1 * (1 - ratio) + g2 * ratio)
+            b = int(b1 * (1 - ratio) + b2 * ratio)
+
+            return f"#{r:02x}{g:02x}{b:02x}"
+
+        if step > 10:
+            return
+
+        blend_color = blend(color1, color2, step / 10)
+        canvas.itemconfig(outline_rect, outline=blend_color)
+        root.after(50, blend_colors_smoothly, color1, color2, step + 1)
+
+        if step == 10:
+            root.after(200, update_outline_color)
+
+    update_outline_color()
 
 def open_settings_window():
     settings_window = tk.Toplevel(root)
