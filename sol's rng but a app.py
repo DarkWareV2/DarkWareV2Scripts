@@ -172,11 +172,9 @@ class GameApp:
                 self.root.after_cancel(self.auto_roll_job)
 
     def auto_roll(self):
-        if self.roll_button.cget('state') == tk.NORMAL:
+        if self.roll_button.cget('state') == tk.NORMAL and (self.current_message_box is None or not self.current_message_box.winfo_exists()):
             self.roll_item(show_message=True)
-            self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
-        else:
-            self.auto_roll_job = self.root.after(100, self.auto_roll)
+        self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
 
     def check_command(self, event):
         command = self.command_entry.get().strip()
