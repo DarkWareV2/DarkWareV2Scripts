@@ -8,8 +8,10 @@ import subprocess
 
 script_dir = os.path.dirname(__file__)
 
+CORRECT_KEY = "PermFreeKeyForJob483gfjn54jkghnytuhsdk49gjkemf39jhfgdgdfgdg4g¤GRH&#¤E&%/&"
 CORRECT_KEY = "@p0NVB}vtJ[\l^r0<]6Y'?A^&XV0$+C08pg%/E`:£2Yg,EnbD~!)k3Vwu_6GQCr0MCU/)N1S3eRLm`niKVovQ5_ItZ3uTCff#yYu`5||:uJsXu7c0e5F"GZr5%BW9I,1Gq8&£"3K0+24&Z'XBL8RI{xLR*^_KAaY]vTO6ZA.1O*WliE26WrHEJ'?"8{{£3m+|XBrG£~wN=j{s6}qM2PyP57-AP;R5n£X0M{7/\tGnE{UOG=67-'C#.mUY'*FPvIoyKJoznj\[*so^6\VPZn23b@Wj7t>'`D~Zl>o7Io6INh"J+N(yBnq`WV}gl~w(O4]<9w_hW`rgj158.hvE)4K%`]\5s2fbMaAJh{3N`2Q<R"pJ.0R\£enS#6B@Nz|D;5H)=_[qaoc.-E#}4$q%>u}l,1CG#7c=K7%5*Re}c$8a3m;=E2AvOy9([7l!,nbN#0-k5-LfG1.:$53F#t.Cd)1b`N@r?5£uRDB2pnT:X\\Fb~nd%!a3S6mi)]t@cC6nr:rvy0:7ACk#yfJ7>t%Zt*UKsnivQdKLNmNBnN]i=ztv}H7=*@6JH#ie!TL#MZPxmet8Q?zLkb+jL7bCQ4CGiij1)X~~5s4)vyRZjxFKuKn@hY?]^CME=%X4:,~UFPR8*d5xBZ]Cs0twW=a7nxnx3cctkYEu_Dgd,VNtU@+}}U^5sMy5sGwe>KoafoBYV=V8zR@6?,Aep+P4~L]1HZ6H#mh.%r!Gv7KegEzVT)?kGMp84YdbgkL1*kbrYpB6uuiYaeCkdLPPkhP#F6?-?57m8TpHN3nA,C!tW!8b5Q=MfVCkY>6cXsu1FeoogpbWuvET_Kt>L,WpUpGm5iEGW*M%VyH+.!CNC=M.xr^h>27_-wG##Tg6cJQLFt2M8*#?Y)4TNFs5Y:CFgAU6Xc+!TkHd.o3:v*)ewQb^.!2Lao*k7Ry_WPnXND_Asxy4yGm2>)kF)s!!>uMsJN1!i^hwvNC*!ef7%WZ5uZ_GLH#7EAna}KD"
 PREMIUM_KEY = "GiftedByOwnerKey"
+
 
 # Initial state of topmost (0 = off, 1 = on)
 topmost_enabled = 0
