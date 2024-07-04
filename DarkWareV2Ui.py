@@ -34,12 +34,18 @@ def copy_key_link():
 
 def check_windows_version():
     try:
-        # Get the product info using win32api
         product_info = win32api.GetVersionEx()
-        # Windows 10 and 11 Pro have the product type 0x48
-        # Windows 8.1 Pro and 7 Pro have the product type 0x30
-        pro_product_types = [0x30, 0x48]
-        return product_info[4] in pro_product_types
+        major_version = product_info[0]
+        minor_version = product_info[1]
+        build_number = product_info[2]
+        platform_id = product_info[3]
+        csd_version = product_info[4]
+
+        # Check if it's Windows 10 or 11
+        if (major_version == 10 and build_number >= 22000) or (major_version == 11):
+            return True
+        else:
+            return False
     except Exception as e:
         print(f"Error checking Windows version: {e}")
         return False
