@@ -27,24 +27,9 @@ PREMIUM_KEY = "GiftedByOwnerKey"
 topmost_enabled = 0
 premium_enabled = False
 
-links = [
-    "https://link-target.net/1199116/darkwarev28",
-    "https://direct-link.net/1199116/darkwarev27",
-    "https://direct-link.net/1199116/darkwarev26",
-    "https://direct-link.net/1199116/darkwarev25",
-    "https://link-hub.net/1199116/darkwarev24",
-    "https://link-center.net/1199116/darkwarev2",
-    "https://direct-link.net/1199116/darkware-v2",
-    "https://link-center.net/1199116/darkwarev23",
-    "https://direct-link.net/1199116/darkware-v2",
-    "https://link-center.net/1199116/darkwarev22",
-    "https://link-target.net/1199116/darkwarev21",
-    "https://link-center.net/1199116/darkwarev2",
-]
-
 def validate_key():
     entered_key = key_entry.get().strip()
-    if entered_key in [CORRECT_KEY1, CORRECT_KEY2, CORRECT_KEY3, PREMIUM_KEY]:
+    if entered_key in [CORRECT_KEY1, CORRECT_KEY2, CORRECT_KEY3, CORRECT_KEY4, CORRECT_KEY5, CORRECT_KEY6, CORRECT_KEY7, CORRECT_KEY8, CORRECT_KEY9, CORRECT_KEY10, PREMIUM_KEY]:
         messagebox.showinfo("Success", "Key is valid.")
         key_entry.delete(0, tk.END)
         show_main_window(entered_key == PREMIUM_KEY)
@@ -52,7 +37,7 @@ def validate_key():
         messagebox.showerror("Error", "Invalid key.")
 
 def copy_key_link():
-    link = random.choice(links)
+    link = "https://link-center.net/1192813/darkware-v2-key-system-3"
     pyperclip.copy(link)
     messagebox.showinfo("Copied", "Key link copied to clipboard.")
 
@@ -164,47 +149,103 @@ def show_main_window(is_premium):
         canvas.bind("<ButtonPress-1>", start_drag)
         canvas.bind("<B1-Motion>", drag_window)
 
-        # Create buttons on the main window
-        inject_button = tk.Button(main_frame, text="Inject", command=inject_button_click)
-        inject_button_window = canvas.create_window(image_width - 100, image_height - 50, anchor='nw', window=inject_button)
+        # Create buttons
+        button_margin = 10
 
-        copy_key_link_button = tk.Button(main_frame, text="Copy Key Link", command=copy_key_link)
-        copy_key_link_button_window = canvas.create_window(20, image_height - 50, anchor='nw', window=copy_key_link_button)
+        exit_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2ExitButton.png")
+        if os.path.exists(exit_button_path):
+            exit_button_image = PhotoImage(file=exit_button_path)
+            exit_button = tk.Button(main_frame, image=exit_button_image, bd=0, highlightthickness=0, command=close_window)
+            exit_button.image = exit_button_image
+            canvas.create_window(image_width - exit_button_image.width() - button_margin, button_margin, anchor='nw', window=exit_button)
+
+        injector_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2InjectorButton.png")
+        if os.path.exists(injector_button_path):
+            injector_button_image = PhotoImage(file=injector_button_path)
+            injector_button = tk.Button(main_frame, image=injector_button_image, bd=0, highlightthickness=0, command=inject_button_click)
+            injector_button.image = injector_button_image
+            canvas.create_window(button_margin, image_height - injector_button_image.height() - button_margin, anchor='nw', window=injector_button)
+
+        settings_button_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsButton.png")
+        if os.path.exists(settings_button_path):
+            settings_button_image = PhotoImage(file=settings_button_path)
+            settings_button = tk.Button(main_frame, image=settings_button_image, bd=0, highlightthickness=0, command=open_settings_window)
+            settings_button.image = settings_button_image
+            canvas.create_window(image_width - settings_button_image.width() - button_margin, image_height - settings_button_image.height() - button_margin, anchor='nw', window=settings_button)
+
+        root.mainloop()
+    else:
+        print(f"Error: The image 'DarkWareV2Background.png' does not exist in the directory '{script_dir}'.")
+
+def apply_rainbow_outline(canvas, outline_rect):
+    colors = ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"]
+    color_index = 0
+
+    def update_outline_color():
+        nonlocal color_index
+        current_color = colors[color_index]
+        next_color = colors[(color_index + 1) % len(colors)]
+        color_index = (color_index + 1) % len(colors)
+        blend_colors_smoothly(current_color, next_color, 0)
+
+    def blend_colors_smoothly(color1, color2, step):
+        def blend(color1, color2, ratio):
+            r1, g1, b1 = int(color1[1:3], 16), int(color1[3:5], 16), int(color1[5:], 16)
+            r2, g2, b2 = int(color2[1:3], 16), int(color2[3:5], 16), int(color2[5:], 16)
+
+            r = int(r1 * (1 - ratio) + r2 * ratio)
+            g = int(g1 * (1 - ratio) + g2 * ratio)
+            b = int(b1 * (1 - ratio) + b2 * ratio)
+
+            return f"#{r:02x}{g:02x}{b:02x}"
+
+        if step > 10:
+            return
+
+        blend_color = blend(color1, color2, step / 10)
+        canvas.itemconfig(outline_rect, outline=blend_color)
+        root.after(50, blend_colors_smoothly, color1, color2, step + 1)
+
+        if step == 10:
+            root.after(200, update_outline_color)
+
+    update_outline_color()
+
+def open_settings_window():
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Settings")
+    settings_window.geometry("400x300")
+
+    settings_background_path = os.path.join(script_dir, "EXECUTER LOOKS", "DarkWareV2SettingsBackground.png")
+    if os.path.exists(settings_background_path):
+        settings_background_image = PhotoImage(file=settings_background_path)
+        settings_background_label = tk.Label(settings_window, image=settings_background_image)
+        settings_background_label.pack(fill=tk.BOTH, expand=True)
+
+        toggle_topmost_button = tk.Button(settings_window, text="Toggle Topmost", font=('Arial', 14), command=toggle_topmost_with_key)
+        toggle_topmost_button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
     else:
-        messagebox.showerror("Image Error", "DarkWareV2Background.png not found.")
+        print(f"Error: The settings background image 'DarkWareV2SettingsBackground.png' does not exist in the directory '{script_dir}'.")
 
-def apply_rainbow_outline(canvas, item_id):
-    def change_color():
-        colors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3']
-        color = random.choice(colors)
-        canvas.itemconfigure(item_id, outline=color)
-        root.after(100, change_color)
+def close_window():
+    root.destroy()
 
-    change_color()
-
-# Create main window
 root = tk.Tk()
-root.title("DarkWare V2")
+root.overrideredirect(True)
 
-# Create frames
 key_frame = tk.Frame(root)
-main_frame = tk.Frame(root)
-
-# Show key entry frame initially
 key_frame.pack(fill=tk.BOTH, expand=True)
 
-# Create and position key entry widgets
-key_label = tk.Label(key_frame, text="Enter Key:")
-key_label.pack(pady=10)
+main_frame = tk.Frame(root)
 
-key_entry = tk.Entry(key_frame, width=50)
-key_entry.pack(padx=10, pady=5)
+key_entry = tk.Entry(key_frame, bd=5, font=('Arial', 14), foreground='black')
+key_entry.pack(pady=20, side=tk.LEFT, padx=10)
 
-validate_button = tk.Button(key_frame, text="Validate Key", command=validate_key)
-validate_button.pack(pady=10)
+validate_button = tk.Button(key_frame, text="Check Key", font=('Arial', 14), command=validate_key)
+validate_button.pack(pady=20, side=tk.LEFT, padx=10)
 
-toggle_topmost_button = tk.Button(key_frame, text="Toggle Topmost", command=toggle_topmost_with_key)
-toggle_topmost_button.pack()
+copy_link_button = tk.Button(key_frame, text="Copy Key Link", font=('Arial', 14), command=copy_key_link)
+copy_link_button.pack(pady=20, side=tk.LEFT, padx=10)
 
 root.mainloop()
