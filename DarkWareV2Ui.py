@@ -27,7 +27,7 @@ premium_enabled = False
 
 def validate_key():
     entered_key = key_entry.get().strip()
-    if entered_key in [CORRECT_KEY1, CORRECT_KEY2, CORRECT_KEY3, CORRECT_KEY4, CORRECT_KEY5, CORRECT_KEY6, CORRECT_KEY7, CORRECT_KEY8, CORRECT_KEY10,CORRECT_KEY11, PREMIUM_KEY]:
+    if entered_key in [CORRECT_KEY1, CORRECT_KEY2, CORRECT_KEY3, CORRECT_KEY4, CORRECT_KEY5, CORRECT_KEY6, CORRECT_KEY7, CORRECT_KEY8, CORRECT_KEY11, PREMIUM_KEY]:
         messagebox.showinfo("Success", "Key is valid.")
         key_entry.delete(0, tk.END)
         show_main_window(entered_key == PREMIUM_KEY)
