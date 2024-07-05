@@ -10,8 +10,8 @@ import win32con
 
 script_dir = os.path.dirname(__file__)
 
-CORRECT_KEY = "PermFreeKeyForJob483gfjn54jkghnytuhsdk49gjkemf39jhfgdgdfgdg4g¤GRH&#¤E&%/&"
-CORRECT_KEY = "@p0NVB}vtJ[\l^r0<]6Y'?A^&XV0$+C08pg%/E`:£2Yg,EnbD~!)k3Vwu_6GQCr0MCU/)N1S3eRLm`niKVovQ5fdsiojfui45jg954jgfiogj5yioutjmgfkhjmytoihjfkglhjt6iohjfiho"
+CORRECT_KEY1 = "PermFreeKeyForJob483gfjn54jkghnytuhsdk49gjkemf39jhfgdgdfgdg4g¤GRH&#¤E&%/&"
+CORRECT_KEY2 = "@p0NVB}vtJ[\l^r0<]6Y'?A^&XV0$+C08pg%/E`:£2Yg,EnbD~!)k3Vwu_6GQCr0MCU/)N1S3eRLm`niKVovQ5fdsiojfui45jg954jgfiogj5yioutjmgfkhjmytoihjfkglhjt6iohjfiho"
 PREMIUM_KEY = "GiftedByOwnerKey"
 
 # Initial state of topmost (0 = off, 1 = on)
