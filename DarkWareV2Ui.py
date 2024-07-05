@@ -186,7 +186,6 @@ def apply_rainbow_outline(canvas, item_id):
 # Create main window
 root = tk.Tk()
 root.title("DarkWare V2")
-root.iconbitmap(os.path.join(script_dir, "Icons", "darkware_icon.ico"))
 
 # Create frames
 key_frame = tk.Frame(root)
