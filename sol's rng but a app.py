@@ -166,19 +166,29 @@ class GameApp:
 
     def toggle_auto_roll(self):
         if self.auto_roll_var.get():
-            self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
+            self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
         else:
             if self.auto_roll_job:
                 self.root.after_cancel(self.auto_roll_job)
+                self.auto_roll_job = None
 
     def auto_roll(self):
-        if self.roll_button.cget('state') == tk.NORMAL and (self.current_message_box is None or not self.current_message_box.winfo_exists()):
+        if self.auto_roll_var.get():
+            if self.current_message_box is not None and self.current_message_box.winfo_exists():
+                self.current_message_box.destroy()
             self.roll_item(show_message=True)
-        self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
+            self.auto_roll_job = self.root.after(AUTO_ROLL_INTERVAL, self.auto_roll)
 
     def check_command(self, event):
         command = self.command_entry.get().strip()
         self.command_entry.delete(0, tk.END)
+        if command == "BertramKey":
+            self.add_item_to_inventory("Sol's")
+            self.show_message("You received: Sol's", "Sol's")
+            pygame.mixer.music.load(SOUND_FILE_PATH)
+            pygame.mixer.music.play()
+            return
+
         if command.startswith("/give @s "):
             item_name = command.split("/give @s ")[1].strip()
             for rarity in RARITIES.values():
